@@ -1,4 +1,4 @@
-module github.com/converge/k1-create-app-go-template
+module github.com/{{ .user }}/{{ .projectName }}
 
 go 1.18
 
