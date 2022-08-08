@@ -1,0 +1,80 @@
+variables:
+  ARGO_SERVER: "argo.joao.kubefirst.tech:443"
+  ARGO_HTTP1: 'true'
+  ARGO_SECURE: 'true'
+  ARGO_NAMESPACE: argo
+  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_TLS_VERIFY: 1
+  DOCKER_CERT_PATH: "${DOCKER_TLS_CERTDIR}/client"
+  BUILDER_IMAGE: "kubefirst/chubbo:0.2"
+
+stages:
+#  - branch
+  - publish # name is publish-app-image
+#  - development
+#  - release
+
+# hello:
+#   image: "${BUILDER_IMAGE}"
+#   stage: branch
+#   script:
+#     - |
+#       argo submit .argo/hello.yaml \
+#         --generate-name="${CI_PROJECT_NAME}-lint-${CI_COMMIT_SHORT_SHA}" \
+#         --serviceaccount=argo \
+#         -p appName="${CI_PROJECT_NAME}" \
+#         -p branch="${CI_COMMIT_REF_NAME}" \
+#         -p gitRepoUrl="${CI_PROJECT_URL}" \
+#         -p npmScriptName="lint2" \
+#         --wait --log
+
+publish:
+  image: "${BUILDER_IMAGE}"
+  stage: publish
+  script:
+    - echo "commit sha $CI_COMMIT_SHA"
+    - |
+      argo submit .argo/publish.yaml \
+        --generate-name="${CI_PROJECT_NAME}-publish-${CI_COMMIT_SHORT_SHA}" \
+        --serviceaccount=argo \
+        -p appName="${CI_PROJECT_NAME}" \
+        -p ciCommitSha="${CI_COMMIT_SHA}" \
+        -p branch="${CI_COMMIT_REF_NAME}" \
+        -p gitRepoUrl="${CI_PROJECT_URL}" \
+        -p shortSha="${CI_COMMIT_SHORT_SHA}" \
+        --wait --log
+
+#development:
+#  image: "${BUILDER_IMAGE}"
+#  stage: development
+#  script:
+#    - echo "commit sha $CI_COMMIT_SHA"
+#    - |
+#      argo submit .argo/deploy.yaml \
+#        --generate-name="${CI_PROJECT_NAME}-development-${CI_COMMIT_SHORT_SHA}" \
+#        --serviceaccount=argo \
+#        -p appName="${CI_PROJECT_NAME}" \
+#        -p ciCommitSha="${CI_COMMIT_SHA}" \
+#        -p branch="${CI_COMMIT_REF_NAME}" \
+#        -p environment="development" \
+#        -p gitRepoUrl="${CI_PROJECT_URL}" \
+#        -p shortSha="${CI_COMMIT_SHORT_SHA}" \
+#        --wait --log
+#
+#release:
+#  image: "${BUILDER_IMAGE}"
+#  stage: release
+#  script:
+#    - echo "commit sha $CI_COMMIT_SHA"
+#    - |
+#      argo submit .argo/release.yaml \
+#        --generate-name="${CI_PROJECT_NAME}-release-${CI_COMMIT_SHORT_SHA}" \
+#        --serviceaccount=argo \
+#        -p appName="${CI_PROJECT_NAME}" \
+#        -p ciCommitSha="${CI_COMMIT_SHA}" \
+#        -p branch="${CI_COMMIT_REF_NAME}" \
+#        -p environment="development" \
+#        -p gitRepoUrl="${CI_PROJECT_URL}" \
+#        -p shortSha="${CI_COMMIT_SHORT_SHA}" \
+#        --wait --log
+#
