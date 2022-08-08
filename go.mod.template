@@ -1,4 +1,4 @@
-module github.com/{{ .user }}/{{ .projectName }}
+module github.com/{{ .ProjectOwner }}/{{ .ProjectName }}
 
 go 1.18
 
